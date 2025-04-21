@@ -18,7 +18,17 @@ class SMD_constV_couple(Custom):
         pulling_direction: np.array=None,
         R0=0.
     ):
-        r"""
+        r"""Constant velocity SMD with coupling mode
+        
+        Args: 
+            sim: hoomd.Simulation object
+            group1_idx: an array of indexes of particle group 1
+            group2_idx: an array of indexes of particle group 2
+            dt: timestep
+            pulling_velocity: SMD pulling velocity
+            spring_constant: spring constant of the harmonic guiding potential for SMD pullings
+            pulling_direction: the direction of SMD pullings, with negative (-) being forward pulling and positive (+) being reverse pulling  
+            R0: distance deviation from the tether point based on the harmonic guiding potential
 
         """
         super().__init__()
@@ -197,7 +207,21 @@ class SMD_constV_threebody(Custom):
             pulling_direction: np.array = None,
             R0=0.
     ):
-        r"""
+        r"""Constant velocity SMD with coupling mode
+        
+        Args: 
+            sim: hoomd.Simulation object
+            group1_idx: an array of indexes of particle group 1
+            group2_idx: an array of indexes of particle group 2
+            group3_idx: an array of indexes of particle group 3
+            dt: timestep
+            pulling_velocity: SMD pulling velocity
+            spring_constant_fix: spring constant of the harmonic guiding potential that fixes particle group 1 and 2
+            spring_constant_pull: spring constant of the harmonic guiding potential that pulls particle group 3
+            r_c: the anchor point that the particle group 3 is pulled towards for work calculation. Default value is the midpoint between particle group 1 and 2 
+            r_fix: anchor points that fix the positions of particle group 1 and 2 
+            pulling_direction: the direction of SMD pullings, with negative (-) being forward pulling and positive (+) being reverse pulling  
+            R0: distance deviation from the tether point based on the harmonic guiding potential
 
         """
         super().__init__()
@@ -426,64 +450,3 @@ class SMD_constV_threebody(Custom):
         self._spring_length = spring_length
         self._pmf = pmf
         return
-
-
-class Constrain_NPs_harmonic(Custom):
-    def __init__(
-        self,
-        sim: hoomd.simulation.Simulation,
-        constrain_idx,
-        kT: float,
-        spring_constant: float,
-        r_fix: np.array = None,
-        R0=0.0
-    ):
-        super().__init__()
-        self._constrain_idx = np.asarray(constrain_idx)
-
-        with sim._state.cpu_local_snapshot as snapshot:
-            constrain_realidx = snapshot.particles.rtag[self._constrain_idx]
-            self._constrain_points = snapshot.particles.position[constrain_realidx, :].mean(axis=1)
-
-        if r_fix is not None:
-            assert len(constrain_idx) == r_fix.shape[0]
-            self._constrain_points = r_fix
-
-        self._kT = kT
-        self._k = spring_constant
-        self._R0 = R0 + 1e-15
-
-        self._current_timestep = None
-        self._total_force = None
-        self._force = None
-
-    def set_forces(self, timestep):
-        if self._current_timestep != timestep:
-            self._current_timestep = timestep
-
-            with self._state.cpu_local_snapshot as snapshot:
-                constrain_realidx = snapshot.particles.rtag[self._constrain_idx]
-                mass = snapshot.particles.mass[constrain_realidx]
-                pos = snapshot.particles.position[constrain_realidx, :]
-                cm = np.sum(pos * mass[:, :, None], axis=1) / mass.sum(axis=1)[:, None]
-
-                drij = cm - self._constrain_points
-                dd = np.linalg.norm(drij, axis=1)
-                dd = dd - self._R0
-
-                self._dist_devi = dd
-                self._total_force = -self._k * dd[:, None] * drij / (dd[:, None] + self._R0 + 1e-15)
-
-                massfraction = mass / mass.sum(axis=1)[:, None]
-                self._mass = mass
-                self._massfraction = massfraction
-                self._force = self._total_force[:, None, :] * massfraction[:, :, None]  # N_group * N_particles * N_dim
-
-        with self._state.cpu_local_snapshot as snapshot:
-            constrain_realidx = snapshot.particles.rtag[self._constrain_idx]
-        with self.cpu_local_force_arrays as arrays:
-            arrays.force[constrain_realidx, :] = self._force
-
-    @log(category="scalar", is_property=False, requires_run=True)
-    def distance_deviation(self):
-        return self._dist_devi
