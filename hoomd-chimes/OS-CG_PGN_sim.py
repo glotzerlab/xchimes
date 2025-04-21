@@ -6,9 +6,9 @@ from hoomd_chimes_addons import ChIMES_manybody
 
 TIME_CONVERSION = 0.01  # From 1 fs to 100fs (derived time unit)
 # ChIMES related
-chimes_api_path = "/home/shihkual/chimes_calculator-myfork/serial_interface/api"
-chimes_wrapper_path = "/home/shihkual/chimes_calculator-myfork/build/"
-param_file = "./A4_params.txt"
+chimes_api_path = "/path/to/chimes_calculator/serial_interface/api"
+chimes_wrapper_path = "/path/to/chimes_calculator/build/"
+param_file = "A4_params.txt"
 
 traj_fn = "traj.gsd"
 thermo_fn = "log.txt"
@@ -23,6 +23,7 @@ lattice_const = 120.0
 perturb_pos_std = 0.0
 
 # Thermodynamic condition
+mass = 67256.0
 dt = 5.0            # fs
 T = 300             # K
 tau = 500.0         # fs
@@ -40,7 +41,7 @@ snapshot.particles.N = random_system[1].shape[0]
 snapshot.particles.position = random_system[1]
 snapshot.particles.types = ['A']
 snapshot.configuration.box = [random_system[0].Lx, random_system[0].Ly, random_system[0].Lz, 0.0, 0.0, 0.0]
-snapshot.particles.mass = [67256.0] * random_system[1].shape[0]
+snapshot.particles.mass = [mass] * random_system[1].shape[0]
 snapshot.configuration.step = 0
 
 with gsd.hoomd.open(name='lattice.gsd', mode='w') as f:
