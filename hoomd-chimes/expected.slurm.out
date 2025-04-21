@@ -1,0 +1,184 @@
+chimesFF: 
+chimesFF: 01000011011010001001001010011010100010101010011 0100010101101110110011101101001011011101100101  
+chimesFF: 
+chimesFF:       _____  _      _____  __  __  ______   _____   ______                _                      
+chimesFF:      / ____|| |    |_   _||  \/  ||  ____| / ____| |  ____|              (_)                    
+chimesFF:     | |     | |__    | |  | \  / || |__   | (___   | |__    _ __    __ _  _  _ __    ___        
+chimesFF:     | |     | '_ \   | |  | |\/| ||  __|   \___ \  |  __|  | '_ \  / _` || || '_ \  / _ \ 
+chimesFF:     | |____ | | | | _| |_ | |  | || |____  ____) | | |____ | | | || (_| || || | | ||  __/        
+chimesFF:      \_____||_| |_||_____||_|  |_||______||_____/  |______||_| |_| \__, ||_||_| |_| \___|     
+chimesFF:                                                                     __/ |                        
+chimesFF:                                                                    |___/                         
+chimesFF: 
+chimesFF:                      Copyright (C) 2020 R.K. Lindsey, L.E. Fried, N. Goldman                     
+chimesFF: 
+chimesFF: 01000011011010001001001010011010100010101010011 0100010101101110110011101101001011011101100101   
+chimesFF: 
+chimesFF: Reading parameters from file: ./A4_params.txt
+chimesFF: Using respective 2, 3, and 4-body orders of: 12 5 0
+chimesFF: Note: Ignoring polynomial domain; assuming [-1,1]
+chimesFF: Will consider 1 atom types:
+chimesFF: 	0 1
+chimesFF: Will consider 1 atom pair types
+chimesFF: Detected version 2 pair specification (no S_DELTA)
+chimesFF: 	0 1 1
+chimesFF: Read the following pair type information:
+chimesFF: 	1 1 r_cut_in: 48.00000 r_cut_out: 120.00000 MORSE 60.00000
+chimesFF: Will use cutoff style TERSOFF
+ 0.75000
+chimesFF: Will use single atom energy offsets: 
+chimesFF: 	1 1 -2.80025
+chimesFF: Read 2B parameters for pair: 0 1 1
+chimesFF: 	0 134.64429
+chimesFF: 	1 252.41652
+chimesFF: 	2 370.67574
+chimesFF: 	3 57.11718
+chimesFF: 	4 78.32130
+chimesFF: 	5 -106.19996
+chimesFF: 	6 100.98361
+chimesFF: 	7 -28.83502
+chimesFF: 	8 67.38984
+chimesFF: 	9 -24.80710
+chimesFF: 	10 33.57355
+chimesFF: 	11 -7.45618
+chimesFF: Built the following 2-body pair "slow" map:
+chimesFF: 	0 11(i: 0)
+chimesFF: Built the following 2-body pair "fast" map:
+chimesFF: 	11: 0 0
+chimesFF: Read 3B parameters for triplet: 0 1 1 1
+chimesFF: 	0 1 1 2905.57313
+chimesFF: 	1 0 1 2905.57313
+chimesFF: 	1 1 0 2905.57313
+chimesFF: 	0 1 2 -310.76125
+chimesFF: 	1 0 2 -310.76125
+chimesFF: 	0 2 1 -310.76125
+chimesFF: 	2 0 1 -310.76125
+chimesFF: 	1 2 0 -310.76125
+chimesFF: 	2 1 0 -310.76125
+chimesFF: 	0 1 3 1193.73051
+chimesFF: 	1 0 3 1193.73051
+chimesFF: 	0 3 1 1193.73051
+chimesFF: 	3 0 1 1193.73051
+chimesFF: 	1 3 0 1193.73051
+chimesFF: 	3 1 0 1193.73051
+chimesFF: 	0 1 4 -313.10264
+chimesFF: 	1 0 4 -313.10264
+chimesFF: 	0 4 1 -313.10264
+chimesFF: 	4 0 1 -313.10264
+chimesFF: 	1 4 0 -313.10264
+chimesFF: 	4 1 0 -313.10264
+chimesFF: 	0 2 2 -187.36840
+chimesFF: 	2 0 2 -187.36840
+chimesFF: 	2 2 0 -187.36840
+chimesFF: 	0 2 3 -74.95965
+chimesFF: 	2 0 3 -74.95965
+chimesFF: 	0 3 2 -74.95965
+chimesFF: 	3 0 2 -74.95965
+chimesFF: 	2 3 0 -74.95965
+chimesFF: 	3 2 0 -74.95965
+chimesFF: 	0 2 4 11.18679
+chimesFF: 	2 0 4 11.18679
+chimesFF: 	0 4 2 11.18679
+chimesFF: 	4 0 2 11.18679
+chimesFF: 	2 4 0 11.18679
+chimesFF: 	4 2 0 11.18679
+chimesFF: 	0 3 3 579.81812
+chimesFF: 	3 0 3 579.81812
+chimesFF: 	3 3 0 579.81812
+chimesFF: 	0 3 4 -85.35445
+chimesFF: 	3 0 4 -85.35445
+chimesFF: 	0 4 3 -85.35445
+chimesFF: 	4 0 3 -85.35445
+chimesFF: 	3 4 0 -85.35445
+chimesFF: 	4 3 0 -85.35445
+chimesFF: 	0 4 4 24.49092
+chimesFF: 	4 0 4 24.49092
+chimesFF: 	4 4 0 24.49092
+chimesFF: 	1 1 1 -10178.16885
+chimesFF: 	1 1 2 3353.58145
+chimesFF: 	1 2 1 3353.58145
+chimesFF: 	2 1 1 3353.58145
+chimesFF: 	1 1 3 -4365.78431
+chimesFF: 	1 3 1 -4365.78431
+chimesFF: 	3 1 1 -4365.78431
+chimesFF: 	1 1 4 1178.21375
+chimesFF: 	1 4 1 1178.21375
+chimesFF: 	4 1 1 1178.21375
+chimesFF: 	1 2 2 -503.26634
+chimesFF: 	2 1 2 -503.26634
+chimesFF: 	2 2 1 -503.26634
+chimesFF: 	1 2 3 1438.01668
+chimesFF: 	2 1 3 1438.01668
+chimesFF: 	1 3 2 1438.01668
+chimesFF: 	3 1 2 1438.01668
+chimesFF: 	2 3 1 1438.01668
+chimesFF: 	3 2 1 1438.01668
+chimesFF: 	1 2 4 -465.46936
+chimesFF: 	2 1 4 -465.46936
+chimesFF: 	1 4 2 -465.46936
+chimesFF: 	4 1 2 -465.46936
+chimesFF: 	2 4 1 -465.46936
+chimesFF: 	4 2 1 -465.46936
+chimesFF: 	1 3 3 -1954.04278
+chimesFF: 	3 1 3 -1954.04278
+chimesFF: 	3 3 1 -1954.04278
+chimesFF: 	1 3 4 532.96153
+chimesFF: 	3 1 4 532.96153
+chimesFF: 	1 4 3 532.96153
+chimesFF: 	4 1 3 532.96153
+chimesFF: 	3 4 1 532.96153
+chimesFF: 	4 3 1 532.96153
+chimesFF: 	1 4 4 -203.29248
+chimesFF: 	4 1 4 -203.29248
+chimesFF: 	4 4 1 -203.29248
+chimesFF: 	2 2 2 -656.86954
+chimesFF: 	2 2 3 -142.47655
+chimesFF: 	2 3 2 -142.47655
+chimesFF: 	3 2 2 -142.47655
+chimesFF: 	2 2 4 -7.58245
+chimesFF: 	2 4 2 -7.58245
+chimesFF: 	4 2 2 -7.58245
+chimesFF: 	2 3 3 758.69729
+chimesFF: 	3 2 3 758.69729
+chimesFF: 	3 3 2 758.69729
+chimesFF: 	2 3 4 -174.16367
+chimesFF: 	3 2 4 -174.16367
+chimesFF: 	2 4 3 -174.16367
+chimesFF: 	4 2 3 -174.16367
+chimesFF: 	3 4 2 -174.16367
+chimesFF: 	4 3 2 -174.16367
+chimesFF: 	2 4 4 35.91689
+chimesFF: 	4 2 4 35.91689
+chimesFF: 	4 4 2 35.91689
+chimesFF: 	3 3 3 -903.42485
+chimesFF: 	3 3 4 257.56084
+chimesFF: 	3 4 3 257.56084
+chimesFF: 	4 3 3 257.56084
+chimesFF: 	3 4 4 -98.40565
+chimesFF: 	4 3 4 -98.40565
+chimesFF: 	4 4 3 -98.40565
+chimesFF: 	4 4 4 30.12618
+chimesFF: Built the following 3-body pair "slow" map:
+chimesFF: 	0 111111
+chimesFF: Built the following 3-body pair "fast" map:
+chimesFF: 	0 0
+5000 68.32776006570398
+10000 68.63876170622069
+15000 68.14769879736622
+20000 68.31798710943427
+25000 68.71786941400342
+30000 68.12390140841943
+35000 67.89624779805679
+40000 68.05594530817345
+45000 67.45138347104387
+50000 67.24594023145865
+55000 66.82606643743277
+60000 66.1753692549208
+65000 65.55667159233275
+70000 65.6507958800029
+75000 65.50268139811492
+80000 64.92925081578734
+85000 64.54319636677569
+90000 64.34159477694493
+95000 63.635929986426206
+100000 63.49034542316067
