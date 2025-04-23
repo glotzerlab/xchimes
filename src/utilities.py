@@ -3,6 +3,8 @@ import scipy
 import scipy.linalg
 from scipy.special import eval_chebyt
 from sklearn import linear_model
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
 import itertools
 import warnings
 
@@ -346,12 +348,15 @@ class ChIMES:
         """
         Copy from the rk-lindsey/chimes_lsq Github repo
         """
-        reg = linear_model.LassoLars(
-            alpha=gamma,
-            fit_intercept=False,
-            fit_path=False,
-            verbose=True,
-            max_iter=100000
+        reg = make_pipeline(
+            StandardScaler(with_mean=False), 
+            linear_model.LassoLars(
+                        alpha=gamma,
+                        fit_intercept=False,
+                        fit_path=False,
+                        verbose=True,
+                        max_iter=100000
+            )
         )
         reg.fit(A, b)
         return reg.coef_.ravel()
