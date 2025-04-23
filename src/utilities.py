@@ -33,12 +33,6 @@ class ChIMES:
         x_out = np.exp(-crds_out / morse_lambda)
         return x, x_in, x_out
 
-    def inverse_trans(self, crds, crds_in, crds_out):
-        x = 1/crds
-        x_in = 1/crds_in
-        x_out = 1/crds_out
-        return x, x_in, x_out
-
     def rescale_into_s(self, x, x_in, x_out, out_coeff=1.0):
         x_avg = (x_in + x_out*out_coeff) / 2
         x_diff = np.abs(x_in - x_out*out_coeff) / 2
@@ -56,20 +50,7 @@ class ChIMES:
         A.append(np.ones_like(s) * N_particles)
 
         return np.column_stack(A)
-        
-    def make_Amatrix_design(self, s, O2b, s_lamb, Olamb, smooth_fr, N_particles):
-        n_datapoints = s.shape[0]
-        assert n_datapoints == s_lamb.shape[0], "number of data points does not match"
-        assert n_datapoints == smooth_fr.shape[0], "number of data points does not match"
-
-        A = []
-        for o_lamb in range(0, Olamb):
-            for o_r in range(1, O2b+1):
-                column = eval_chebyt(o_r, s) * eval_chebyt(o_lamb, s_lamb) * smooth_fr
-                A.append(column)
-        A.append(np.ones_like(s) * N_particles)
-
-        return np.column_stack(A)
+    
 
     def make_3bAmatrix(
             self,
@@ -132,111 +113,6 @@ class ChIMES:
             print(item)
         return np.column_stack(A)
 
-    def make_3bAmatrix_design(
-            self,
-            s_ij,
-            s_ik,
-            s_jk,
-            lamb,
-            smooth_fr_ij,
-            smooth_fr_ik,
-            smooth_fr_jk,
-            smooth_fl,
-            O2b,
-            O3b,
-            Olamb_2b,
-            Olamb_3b,
-            N_particles
-    ):
-        """
-        Note: eval_chebyt can still return extrapolation value when s is outside
-        the interval of [-1, 1]. However, the smoothing function guarantee that 
-        the extrapolation value is zero out so it doesn't influence the A matrix
-        generation.
-        """
-        n_datapoints = s_ij.shape[0]
-        assert s_ik.shape[0] == n_datapoints, "number of data points does not match"
-        assert s_jk.shape[0] == n_datapoints, "number of data points does not match"
-        assert smooth_fr_ij.shape[0] == n_datapoints, "number of data points does not match"
-        assert smooth_fr_ik.shape[0] == n_datapoints, "number of data points does not match"
-        assert smooth_fr_jk.shape[0] == n_datapoints, "number of data points does not match"
-        assert lamb.shape[0] == n_datapoints, "number of data points does not match"
-
-        A = []
-        for o_r in range(1, O2b + 1):
-            for o_lamb in range(0, Olamb_2b):
-                column = (eval_chebyt(o_r, s_ij) * eval_chebyt(o_lamb, lamb) * smooth_fr_ij +
-                          eval_chebyt(o_r, s_jk) * eval_chebyt(o_lamb, lamb) * smooth_fr_jk +
-                          eval_chebyt(o_r, s_ik) * eval_chebyt(o_lamb, lamb) * smooth_fr_ik)
-                A.append(column)
-
-        count_string_list = [str(i) for i in range(0, O3b)]
-        desire_order = ''.join(count_string_list)
-
-        combinations = list(itertools.combinations_with_replacement(desire_order, 3))[O3b:]
-        for o_lamb in range(0, Olamb_3b):
-            for irr_combination in combinations:
-                possible_terms = list(set(
-                    list(itertools.permutations(irr_combination[0] + irr_combination[1] + irr_combination[2], 3))))
-                column = 0
-                for term in possible_terms:
-                    n1 = float(term[0])
-                    n2 = float(term[1])
-                    n3 = float(term[2])
-                    column += smooth_fr_ij * smooth_fr_ik * smooth_fr_jk * eval_chebyt(n1, s_ij) * eval_chebyt(n2,
-                                                                                                            s_ik) * eval_chebyt(
-                        n3, s_jk) * eval_chebyt(o_lamb, lamb)
-                A.append(column)
-
-        A.append(np.ones_like(s_ij) * N_particles)
-
-        return np.column_stack(A)
-
-    def make_3bOnlyAmatrix_design(
-            self,
-            s_ij,
-            s_ik,
-            s_jk,
-            lamb,
-            smooth_fr_ij,
-            smooth_fr_ik,
-            smooth_fr_jk,
-            O3b,
-            Olamb_3b,
-    ):
-        """
-        Note: eval_chebyt can still return extrapolation value when s is outside
-        the interval of [-1, 1]. However, the smoothing function guarantee that 
-        the extrapolation value is zero out so it doesn't influence the A matrix
-        generation.
-        """
-        n_datapoints = s_ij.shape[0]
-        assert s_ik.shape[0] == n_datapoints, "number of data points does not match"
-        assert s_jk.shape[0] == n_datapoints, "number of data points does not match"
-        assert smooth_fr_ij.shape[0] == n_datapoints, "number of data points does not match"
-        assert smooth_fr_ik.shape[0] == n_datapoints, "number of data points does not match"
-        assert smooth_fr_jk.shape[0] == n_datapoints, "number of data points does not match"
-        assert lamb.shape[0] == n_datapoints, "number of data points does not match"
-
-        A = []
-        count_string_list = [str(i) for i in range(0, O3b)]
-        desire_order = ''.join(count_string_list)
-
-        combinations = list(itertools.combinations_with_replacement(desire_order, 3))[O3b:]
-        for o_lamb in range(0, Olamb_3b):
-            for irr_combination in combinations:
-                possible_terms = list(set(
-                    list(itertools.permutations(irr_combination[0] + irr_combination[1] + irr_combination[2], 3))))
-                column = 0
-                for term in possible_terms:
-                    n1 = float(term[0])
-                    n2 = float(term[1])
-                    n3 = float(term[2])
-                    column += (smooth_fr_ij * smooth_fr_ik * smooth_fr_jk * eval_chebyt(n1, s_ij) *
-                               eval_chebyt(n2, s_ik) * eval_chebyt(n3, s_jk) * eval_chebyt(o_lamb, lamb))
-                A.append(column)
-
-        return np.column_stack(A)
         
     def solve_LSQ_SVD(
         self, 
