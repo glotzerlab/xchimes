@@ -10,10 +10,45 @@ import warnings
 
 
 class ChIMES:
+    """
+    Python Implementation of a subset of ChIMES module in [ChIMES-LSQ](https://github.com/rk-lindsey/chimes_lsq).
+    
+    Only support 
+    1. Unary system.
+    2. Two- and three-body model.
+    3. Morse type transformation.
+    4. Tersoff smoothing.
+    """
     def __init__(self):
         return
         
     def tersoff_smooth(self, crds, morse_fo, crds_out):
+        """
+        
+        Tersoff smooth function.
+        
+        .. math::
+            f_s(r_{ij}) = 
+            \\begin{cases} 
+            0, & \\text{if } r_{ij} > r_{\\text{cut},out} \\
+            1, & \\text{if } r_{ij} < d_t \\
+            \\frac{1}{2} + \\frac{1}{2} \\sin\\left(\\pi \\left[\\frac{r_{ij} - d_t}{r_{\\text{cut},out} - d_t}\\right] + \\frac{\\pi}{2}\\right), & \\text{otherwise}
+            \\end{cases}
+            
+            d_t = r_{\\text{cut},out} * (1-f_o)
+            
+            
+        
+        See https://doi.org/10.1103/PhysRevB.39.5566 and https://doi.org/10.1038/s41524-024-01497-y
+
+        Args:
+            crds (np.array): Inter-particle distances :math:`r_{ij}`.
+            morse_fo (float): Smoothing factor :math:`f_o`.
+            crds_out (float): Radial outer cut-off :math:`r_{\\text{cut},out}`.
+
+        Returns:
+            Tersoff smooth function (np.array) :math:`f_s`.
+        """
         y = np.zeros(crds.shape)
         dt = crds_out * (1 - morse_fo)
 
@@ -225,7 +260,7 @@ class ChIMES:
         Copy from the rk-lindsey/chimes_lsq Github repo
         """
         reg = make_pipeline(
-            StandardScaler(with_mean=False), 
+            StandardScaler(with_mean=False, with_std=False), 
             linear_model.LassoLars(
                         alpha=gamma,
                         fit_intercept=False,
