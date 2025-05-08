@@ -28,7 +28,18 @@ We explain the usage of three folders:
 
 2. `hoomd-chimes`:
 
+    The `OS-CG_PGN_sim.py` demonstrates an example of using ChIMES-Calculator to simulation the PGNs with $\alpha=4$ in hoomd.
+    Notice that user need to input the right path pointing to ChIMES-Calculator in the script.
+
+    The `hoomd_chimes_addons.py` glue the ChIMES-Calculator with hoomd together by using the custom force module.
+
+    The expected output files are also included.
+
 3. `src`:
+
+    The `smd.py` implements the two- and three-body SMD modules using hoomd's custom force module.
+
+    The `utilities.py` implements a subset of [ChIMES-LSQ](https://github.com/rk-lindsey/chimes_lsq) to aid the PMF calculation.
 
 
 # Cite this work
