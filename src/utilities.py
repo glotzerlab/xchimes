@@ -33,10 +33,8 @@ class ChIMES:
             0, & \\text{if } r_{ij} > r_{\\text{cut},out} \\
             1, & \\text{if } r_{ij} < d_t \\
             \\frac{1}{2} + \\frac{1}{2} \\sin\\left(\\pi \\left[\\frac{r_{ij} - d_t}{r_{\\text{cut},out} - d_t}\\right] + \\frac{\\pi}{2}\\right), & \\text{otherwise}
-            \\end{cases}
-            
+            \\end{cases}\\
             d_t = r_{\\text{cut},out} * (1-f_o)
-            
             
         
         See https://doi.org/10.1103/PhysRevB.39.5566 and https://doi.org/10.1038/s41524-024-01497-y
@@ -47,7 +45,7 @@ class ChIMES:
             crds_out (float): Radial outer cut-off :math:`r_{\\text{cut},out}`.
 
         Returns:
-            Tersoff smooth function (np.array) :math:`f_s`.
+            f_s (np.array): Tersoff smooth function :math:`f_s`.
         """
         y = np.zeros(crds.shape)
         dt = crds_out * (1 - morse_fo)
@@ -63,18 +61,71 @@ class ChIMES:
         return y
 
     def morse_trans(self, crds, crds_in, crds_out, morse_lambda):
+        """
+        Morse type transformation.
+        
+        .. math::
+            x_{ij} = \\exp{(-r_{ij}/\\lambda_\\mathrm{Morse})}
+            
+            x_{\\text{cut},in} = \\exp{(-r_{\\text{cut},in}/\\lambda_\\mathrm{Morse})}
+            
+            x_{\\text{cut},out} = \\exp{(-r_{\\text{cut},out}/\\lambda_\\mathrm{Morse})}
+        
+        See https://doi.org/10.1021/acs.jctc.7b00867.
+
+        Args:
+            crds (np.array): Inter-particle distances :math:`r_{ij}`.
+            crds_in (float): Radial inner cut-off :math:`r_{\\text{cut},in}`.
+            crds_out (float): Radial outer cut-off :math:`r_{\\text{cut},out}`.
+            morse_lambda (float): Transformation parameter.
+
+        Returns:
+            tuple(
+                transformed Inter-particle distances (np.array) :math:`x_{ij}`,
+                
+                transformed inner cut-off (float) :math:`x_{\\text{cut},in}`,
+                
+                transformed outer cut-off (float) :math:`x_{\\text{cut},out}`
+            )
+        """
         x = np.exp(-crds / morse_lambda)
         x_in = np.exp(-crds_in / morse_lambda)
         x_out = np.exp(-crds_out / morse_lambda)
         return x, x_in, x_out
 
-    def rescale_into_s(self, x, x_in, x_out, out_coeff=1.0):
-        x_avg = (x_in + x_out*out_coeff) / 2
-        x_diff = np.abs(x_in - x_out*out_coeff) / 2
+    def rescale_into_s(self, x, x_in, x_out):
+        """
+        Helper function to rescale the coordinates into the interval [-1, 1], where the Chebyshev polynomials are defined.
+
+        Args:
+            x (np.array): Coordinates :math:`x_{ij}`.
+            x_in (float): Coordinates inner cut-off :math:`x_{\\text{cut},in}`.
+            x_out (float): Coordinates outer cut-off :math:`x_{\\text{cut},out}`.
+
+        Returns:
+            s (np.array): Rescaled coordinates :math:`s_{ij}`.
+        """
+        x_avg = (x_in + x_out) / 2
+        x_diff = np.abs(x_in - x_out) / 2
         s = (x - x_avg) / x_diff
         return s
 
     def make_Amatrix(self, s, O2b, smooth_f, N_particles):
+        """
+        Helper function that produces two-body design matrix A.
+        
+        See https://doi.org/10.1021/acs.jctc.7b00867.
+
+        Args:
+            s (np.array): Rescaled coordinates.
+            O2b (int): Maximum Chebyshev polynomial order.
+            smooth_f (np.array): Smoothing function.
+            N_particles (int): Number of particles in a system.
+
+        Returns:
+            A (np.array): The design matrix, having the dimension (n_dimers \\times n_polynomial_order + 1)\\
+                The last column represents the number of particles in a system.
+        """
         n_datapoints = s.shape[0]
         assert n_datapoints == smooth_f.shape[0], "number of data points does not match"
 
@@ -100,10 +151,29 @@ class ChIMES:
             N_particles
     ):
         """
-        Note: eval_chebyt can still return extrapolation value when s is outside
-        the interval of [-1, 1]. However, the smoothing function guarantee that 
-        the extrapolation value is zero out so it doesn't influence the A matrix
-        generation.
+        Helper function that produces two- plus three-body design matrix A.
+        
+        See https://doi.org/10.1021/acs.jctc.7b00867.
+        
+        Note: scipy.special.eval_chebyt that used to calculate Chebyshev polynomials 
+        can still return extrapolation value when s is outside the interval of [-1, 1]. 
+        As a result, the smoothing function should guarantee that the extrapolation 
+        value is zero, so it doesn't influence the A matrix generation.
+
+        Args:
+            s_ij (np.array): Rescaled coordinates between particle i and j.
+            s_ik (np.array): Rescaled coordinates between particle i and k.
+            s_jk (np.array): Rescaled coordinates between particle j and k.
+            smooth_f_ij (np.array): Smoothing function between particle i and j.
+            smooth_f_ik (np.array): Smoothing function between particle i and k.
+            smooth_f_jk (np.array): Smoothing function between particle j and k.
+            O2b (int): Maximum two-body Chebyshev polynomial order.
+            O3b (int): Maximum three-body Chebyshev polynomial order (product of three polynomials).
+            N_particles (int): Number of particles in a system.
+
+        Returns:
+            A (np.array): The design matrix, having the dimension (n_configurations, valid_n_polynomial_order + 1)\\
+                The last column represents the number of particles in a system.
         """
         n_datapoints = s_ij.shape[0]
         assert s_ik.shape[0] == n_datapoints, "number of data points does not match"
@@ -153,24 +223,29 @@ class ChIMES:
         self, 
         A, 
         b, 
-        svd_regularization_ratio=1e-12, 
+        svd_regularization_ratio=1e-5, 
         normal_eq=False,
         if_return_svd_results=False
         ):
         """
-        Solve ordinary least square problem through TSVD
+        Solve ordinary least square problem through TSVD and return the solution vector :math:`c`.
+        
+        Loss function:
+        .. math::
+            \\mathcal{L} = ||Ac-b||^2
 
         Args:
-            A: Configuration traning data with dimensions (n_configs, n_polynomials).
-            b: Energy labeling data with dimensions (n_configs,).
-            svd_regularization_ratio: TSVD regularization strength. Drop the pricipal 
+            A (np.array): Configuration traning data with dimensions (n_configurations, valid_n_polynomial_order + 1).
+            b (np.array): Energy labeling data with dimensions (n_configurations,).
+            svd_regularization_ratio (flaot): TSVD regularization strength. Drop the pricipal 
                 componenets and sigular values if the corresponfing singular values 
                 samller than the maximum singular value * svd_regularization_ratio.
-            if_return_svd_results: If retrun left and right singular vectors. 
+                Defaults to :math: `10^{-5}`.
+            if_return_svd_results (bool): If retrun left and right singular vectors. 
                 Defaults to False.
         
         Returns:
-            c: Polynomial coefficients with dimension (n_polynomials,).
+            c (np.array): Polynomial coefficients with dimension (n_polynomials,).
 
         """
         assert A.shape[0] == b.shape[0], "A and b must have the same row dimension (data points number)"
@@ -198,15 +273,18 @@ class ChIMES:
 
     def solve_L2_LSQ(self, A, b, gamma, mode="qr"):
         """
-        Solve L2 regularized least square problem through QR factorization or Cholesky
-        and then apply forward and back substitution.
+        Solve L2 regularized least square problem and return the solution vector :math:`c`.
         Default to use QR factorization.
+        
+        Loss function:
+        .. math::
+            \\mathcal{L} = ||Ac-b||^2 + \\gamma *||c||^2
 
         Args:
-            A: Configuration traning data with dimensions (n_configs, n_polynomials).
-            b: Energy labeling data with dimensions (n_configs,).
-            alpha: L2 regularization strength.
-            mode: Valid modes are "qr", "cholesky", "svd", "sklearn". Defaults to qr.
+            A (np.array): Configuration traning data with dimensions (n_configs, n_polynomials).
+            b (np.array): Energy labeling data with dimensions (n_configurations,).
+            gamma: L2 regularization strength.
+            mode: Method to solve the linear system. Valid modes are "qr", "cholesky", "svd", "sklearn". Defaults to qr.
         
         Returns:
             c: Polynomial coefficients with dimension (n_polynomials,).
@@ -249,7 +327,7 @@ class ChIMES:
 
     def solve_L1_LSQ_coordinate_descent(self, A, b, gamma):
         """
-        Copy from the rk-lindsey/chimes_lsq Github repo
+        Copy from [ChIMES-LSQ](https://github.com/rk-lindsey/chimes_lsq).
         """
         reg = linear_model.Lasso(alpha=gamma, fit_intercept=False, max_iter=100000)
         reg.fit(A, b)
@@ -257,7 +335,7 @@ class ChIMES:
 
     def solve_L1_LSQ_LARS(self, A, b, gamma):
         """
-        Copy from the rk-lindsey/chimes_lsq Github repo
+        Copy from [ChIMES-LSQ](https://github.com/rk-lindsey/chimes_lsq).
         """
         reg = make_pipeline(
             StandardScaler(with_mean=False, with_std=False), 
