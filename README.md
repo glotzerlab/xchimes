@@ -4,6 +4,8 @@
 
 We present the source code to perform Forward-Reverse (FR) method for potential of mean force (PMF) generation using HOOMD-Blue and to use ChIMES-Calulater in HOOMD-Blue to conduct coarse-grained (CG) molecular dynamics simulation.
 
+Related database generated using the code present in this repository: http://deepblue.lib.umich.edu/data/concern/data_sets/v979v4270.
+
 # Prerequisites
 
 The source code requires the following packages:
@@ -43,3 +45,4 @@ We explain the usage of three folders:
 
 
 # Cite this work
+1. Zhang MY, Lee S-K (Alex), Glotzer S, Lindsey R. A Generalized Machine-Learning Framework for Developing Alchemical Many-Body Interaction Models for Polymer Grafted Nanoparticles. ChemRxiv. 2025; doi:10.26434/chemrxiv-2025-n4d3s
