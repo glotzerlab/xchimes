@@ -2,7 +2,7 @@
 
 ###  Repository for the paper "A Generalized Machine-Learning Framework for Developing Alchemical Many-Body Interaction Models for Polymer Grafted Nanoparticles"
 
-We present the source code to perform Forward-Reverse (FR) method for potential of mean force (PMF) generation using HOOMD-Blue and to use ChIMES-Calulater in HOOMD-Blue to conduct coarse-grained (CG) molecular dynamics simulation.
+We present the source code to perform Forward-Reverse (FR) method for potential of mean force (PMF) generation using HOOMD-blue and to use ChIMES-Calulater in HOOMD-blue to conduct coarse-grained (CG) molecular dynamics simulation.
 
 Related database generated using the code present in this repository: http://deepblue.lib.umich.edu/data/concern/data_sets/v979v4270.
 
@@ -10,7 +10,7 @@ Related database generated using the code present in this repository: http://dee
 
 The source code requires the following packages:
 
-* [HOOMD-Blue](https://github.com/glotzerlab/hoomd-blue)
+* [HOOMD-blue](https://github.com/glotzerlab/hoomd-blue)
 * [ChIMES-Calculator](https://github.com/rk-lindsey/chimes_calculator)
 * [freud](https://github.com/glotzerlab/freud)
 * [gsd](https://github.com/glotzerlab/gsd)
@@ -33,7 +33,7 @@ We explain the usage of three folders:
     The `OS-CG_PGN_sim.py` demonstrates an example of using ChIMES-Calculator to simulation the PGNs with $\alpha=4$ in hoomd.
     Notice that user need to input the right path pointing to ChIMES-Calculator in the script.
 
-    The `hoomd_chimes_addons.py` glue the ChIMES-Calculator with hoomd together by using the custom force module.
+    The `hoomd_chimes_addons.py` glue the ChIMES-Calculator with HOOMD-blue together by using the custom force module.
 
     The expected output files are also included.
 
